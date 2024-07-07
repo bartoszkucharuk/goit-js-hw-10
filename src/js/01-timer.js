@@ -16,7 +16,7 @@ const elements = {
     second: document.querySelector("span[data-seconds]")
 }
 
-// making start button disabled when no data is chosen
+// making start button disabled when no data is chosen for now
 let userSelectedDate;
 elements.button.disabled = true;
 
@@ -26,7 +26,7 @@ const options = {
     time_24hr: true,
     defaultDate: new Date(),
     minuteIncrement: 1,
-// cooperate with izitoast plugin - pop-ups
+// continue OPTIONS- cooperate with izitoast plugin - pop-ups
     onClose(selectedDates) {
         const currentTime = Date.now();
         if (selectedDates[0] <= currentTime) {
@@ -42,6 +42,7 @@ const options = {
     },
 };
 
+// preparing counter to display current numbers of time
 function runningCounter({ days, hours, minutes, seconds }) {
     elements.day.textContent = `${days}`
     elements.hour.textContent = `${hours}`
@@ -49,12 +50,13 @@ function runningCounter({ days, hours, minutes, seconds }) {
     elements.second.textContent = `${seconds}`;
 }
 
+// start running counter by [data - start] button
 elements.button.addEventListener("click", handlerStart);
-
 function handlerStart() {
     const newInterval = setInterval(() => {
         const currentTime = Date.now();
         const countdown = userSelectedDate - currentTime;
+
         if (countdown <= 0) {
             clearInterval(newInterval);
             elements.input.disabled = false;
@@ -67,24 +69,22 @@ function handlerStart() {
         elements.button.disabled = true;
     }, 1000);
 }
-
+// function converting between units- given in instruction within conspect
 function convertMs(ms) {
     const second = 1000;
     const minute = second * 60;
     const hour = minute * 60;
     const day = hour * 24;
-
-    const days = addLeadingZero(Math.floor(ms / day));
-    const hours = addLeadingZero(Math.floor((ms % day) / hour));
-    const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
-    const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
-
+// adding leading zero to displaying format
+    const days = zeroFormat(Math.floor(ms / day));
+    const hours = zeroFormat(Math.floor((ms % day) / hour));
+    const minutes = zeroFormat(Math.floor(((ms % day) % hour) / minute));
+    const seconds = zeroFormat(Math.floor((((ms % day) % hour) % minute) / second));
     return { days, hours, minutes, seconds };
 }
 
-function addLeadingZero(value) {
+function zeroFormat(value) {
     return String(value).padStart(2, "0")
 }
-
 
 flatpickr("#datetime-picker", options);
